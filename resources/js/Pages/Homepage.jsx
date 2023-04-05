@@ -7,7 +7,7 @@ import Paginator from '@/Components/Homepage/Paginator';
 export default function Homepage(props) {
     console.log('Props ',props)
     return (
-        <div className='min-h-screen bg-slate-50 text-white text-2xl'>
+        <div className='min-h-screen dark:bg-gray-800 text-white text-2xl'>
             <Head title={props.title}/>
             <Navbar user={props.auth.user}/>
             <div className='flex justify-center flex-col lg:flex-row lg:flex-wrap lg:items-stretch items-center gap-4 p-4'>

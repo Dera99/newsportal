@@ -14,9 +14,9 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $news = new NewsCollection(news::paginate(8));
+        $news = new NewsCollection(news::OrderByDesc('id')->paginate(8));
         return Inertia::render('Homepage', [
-            'title' => 'Dera News Homepage',
+            'title' => 'LaraNews Homepage',
             'description' => 'Welcome to Portal Berita Cuy Universe',
             'news' => $news
         ]);
@@ -35,7 +35,13 @@ class NewsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $news = new news();
+        $news ->title = $request->title;
+        $news ->category = $request->category;
+        $news ->description = $request->description;
+        $news ->author = auth()->user()->email;
+        $news ->save();
+        return redirect()->back()->with('message', 'Berita Berhasil Dibuat');
     }
 
     /**
@@ -43,30 +49,42 @@ class NewsController extends Controller
      */
     public function show(news $news)
     {
-        //
+        $myNews = $news::where('author', auth()->user()->email)->get();
+        return Inertia::render('Dashboard', [
+            'myNews' => $myNews
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(news $news)
+    public function edit(news $news, Request $request)
     {
-        //
+        return Inertia::render('EditNews', [
+            'myNews' => $news->find($request->id)
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, news $news)
+    public function update(Request $request)
     {
-        //
+        news::where('id', $request->id)->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'category' => $request->category,
+        ]);
+        return to_route('dashboard')->with('message', 'Update Data Berhasil');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(news $news)
+    public function destroy(Request $request)
     {
-        //
+        $news = news::find($request->id);
+        $news->delete();
+        return redirect()->back()->with('message', 'Berita Berhasil Dihapus');
     }
 }
